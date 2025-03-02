@@ -24,7 +24,7 @@ BlindDate is an interactive and secure dating application that allows users to c
 ## 📥 Installation
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/your-username/BlindDatingApp.git
+   git clone https://github.com/shafin90/blindDateApp.git
    cd BlindDatingApp
    ```
 

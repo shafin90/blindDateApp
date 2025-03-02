@@ -1,50 +1,87 @@
-# Welcome to your Expo app 👋
+# BlindDate - A Blind Dating App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 📌 Overview
+BlindDate is an interactive and secure dating application that allows users to connect anonymously before revealing their identities. The app provides a unique chat experience with real-time messaging, anonymous conversations, and friend request functionalities.
 
-## Get started
+## 🚀 Features
+- 🔒 **Anonymous Chat** - Connect with potential matches while staying anonymous.
+- 💬 **Real-time Messaging** - Powered by Firebase Firestore.
+- 🕒 **Timed Chats** - Conversations disappear after a set period.
+- 📸 **Image Uploads** - Share images with matches.
+- 👤 **User Profiles** - Set up profiles with images and interests.
+- 🔔 **Notifications** - Stay updated with chat and friend request alerts.
+- 📍 **Expo-based** - Optimized for both iOS and Android.
 
-1. Install dependencies
+## 🛠️ Tech Stack
+- **React Native** (v0.76.7)
+- **Expo SDK** (v52.0.37)
+- **Firebase** (v11.4.0) - Firestore, Authentication, Storage
+- **React Navigation** - Stack & Bottom Tabs
+- **Axios** - API requests
+- **Date-fns** - Date formatting
+- **Lottie Animations** - Animated UI elements
 
-   ```bash
-   npm install
+## 📥 Installation
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/your-username/BlindDatingApp.git
+   cd BlindDatingApp
    ```
 
-2. Start the app
-
-   ```bash
-    npx expo start
+2. **Install dependencies:**
+   ```sh
+   npm install  # or yarn install
    ```
 
-In the output, you'll find options to open the app in a
+3. **Start the Expo development server:**
+   ```sh
+   npm start  # or expo start
+   ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 📱 Running on Device
+- **Android:**
+  ```sh
+  npm run android
+  ```
+- **iOS:** (MacOS + Xcode required)
+  ```sh
+  npm run ios
+  ```
+- **Web:**
+  ```sh
+  npm run web
+  ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+## 📦 Building APK (for Android)
+To generate an APK for direct installation:
+```sh
+expo build:android -t apk
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🔥 Building Production Release (for Play Store)
+To generate an **AAB** file for Google Play:
+```sh
+expo build:android -t app-bundle
+```
 
-## Learn more
+## 🚀 Deployment
+This project is set up for **Expo EAS Build**:
+```sh
+eas build -p android  # Android
+```
+```sh
+eas build -p ios  # iOS
+```
+Ensure you have configured **eas.json** before running the above commands.
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🔍 Known Issues & Fixes
+- **App icon not appearing properly?** Ensure your `icon.png` is correctly placed in `assets/` and referenced in `app.json`.
+- **Dark overlay after navigating back?** Try handling `focus` state to reset UI when returning to the HomeScreen.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 📝 Author & Credits
+- 👤 **Shafin12** (Owner & Developer)
+- 🚀 **Contributors welcome!** Feel free to fork and improve.
 
-## Join the community
+## 📜 License
+This project is licensed under the MIT License.
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

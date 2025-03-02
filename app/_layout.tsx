@@ -1,39 +1,65 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Stack, useRouter } from "expo-router";
+import { useEffect } from "react";
+import { useAuth, AuthProvider } from "../context/authContext"; // Import AuthProvider
+import { PaperProvider } from "react-native-paper"; // 🎨 Theme Provider
+import { ActivityIndicator, View } from "react-native";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+function LayoutContent() {
+  const { isLoggedIn } = useAuth(); // Get auth state
+  const router = useRouter();
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
+  // 🔄 Redirect User Based on Auth State
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    if (isLoggedIn === false) {
+      router.replace("/login"); // Redirect to login if not authenticated
+    } else if (isLoggedIn === true) {
+      router.replace("/index"); // Redirect to home if authenticated
     }
-  }, [loaded]);
+  }, [isLoggedIn]);
 
-  if (!loaded) {
-    return null;
+  // ⏳ Show a loading indicator while checking auth state
+  if (isLoggedIn === null) {
+    return (
+      <PaperProvider>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#6200EE" />
+        </View>
+      </PaperProvider>
+    );
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+    <PaperProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        {isLoggedIn ? (
+          <>
+            <Stack.Screen name="index" options={{ title: "Home" }} />
+            <Stack.Screen name="profile" options={{ title: "Profile Setup" }} />
+            <Stack.Screen name="ListScreen" options={{ title: "Partner List" }} />
+            <Stack.Screen name="matches" options={{ title: "Find Matches" }} />
+            <Stack.Screen name="blindChatRoom" options={{ title: "Blind Chat Room" }} />
+            <Stack.Screen name="NotificationsScreen" options={{ title: "Notifications" }} />
+            <Stack.Screen name="chat" options={{ title: "Chat" }} />
+            <Stack.Screen name="settings" options={{ title: "Settings" }} />
+            <Stack.Screen name="partnersProfile" options={{ title: "Partner Profile" }} />
+            <Stack.Screen name="RecievedBlindMessageList" />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="login" options={{ title: "Login" }} />
+            <Stack.Screen name="register" options={{ title: "Register" }} />
+          </>
+        )}
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    </PaperProvider>
+  );
+}
+
+// ✅ Wrap entire app with AuthProvider
+export default function Layout() {
+  return (
+    <AuthProvider>
+      <LayoutContent />
+    </AuthProvider>
   );
 }

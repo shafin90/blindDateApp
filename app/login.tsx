@@ -5,6 +5,7 @@ import { auth } from "../config/firebase";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import { addUser } from "../utils/addUser"
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -29,12 +30,13 @@ const LoginScreen: React.FC = () => {
     try {
       if (isLoginMode) {
         await signInWithEmailAndPassword(auth, email, password);
-        Alert.alert("🎉 Login Successful!");
+        
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
-        Alert.alert("✅ Account Created Successfully!");
+        await addUser({ email: email })
+        
       }
-      router.replace("/");
+      // router.replace("/");
     } catch (error: any) {
       Alert.alert("❌ Error", error.message);
     } finally {
@@ -43,11 +45,11 @@ const LoginScreen: React.FC = () => {
   };
 
   return (
-    <LinearGradient colors={["#0D0D1A", "#1B133B"]} style={styles.background}>
+    <LinearGradient colors={["#371f7d", "#371f7d"]} style={styles.background}>
       <View style={styles.container}>
         {/* App Logo / Title */}
-        <Text style={styles.title}>💖 Blind Dating</Text>
-        <Text style={styles.subtitle}>Connect through personality, not just looks.</Text>
+        <Text style={styles.title}>blindDatE</Text>
+        <Text style={styles.subtitle}>Connect through personality!</Text>
 
         {/* Email Input */}
         <TextInput
@@ -59,7 +61,7 @@ const LoginScreen: React.FC = () => {
           autoCapitalize="none"
           style={[styles.input, { color: "white" }]}
           left={<TextInput.Icon name="email" />}
-          theme={{ colors: { primary: "#E94057" } }}
+          theme={{ colors: { primary: "#bc96ff" } }}
         />
 
         {/* Password Input with Toggle */}
@@ -77,7 +79,7 @@ const LoginScreen: React.FC = () => {
               onPress={() => setSecureText(!secureText)}
             />
           }
-          theme={{ colors: { primary: "#E94057" } }}
+          theme={{ colors: { primary: "#bc96ff" } }}
         />
 
         {/* Auth Button */}
@@ -87,6 +89,7 @@ const LoginScreen: React.FC = () => {
           loading={loading}
           style={styles.button}
           disabled={loading}
+          labelStyle={styles.buttonText} // Add this line
         >
           {loading ? "Processing..." : isLoginMode ? "Login" : "Sign Up"}
         </Button>
@@ -109,27 +112,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 20
   },
   container: {
     width: "100%",
-    backgroundColor: "rgba(30,30,45,0.95)", // Dark Semi-Transparent Background
+    backgroundColor: "transparent", // Dark Semi-Transparent Background
     padding: 25,
     borderRadius: 15,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 5 },
-    elevation: 6,
   },
   title: {
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: "bold",
-    color: "#FFC0CB",
+    color: "#d7ff81",
     marginBottom: 5,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
+    fontFamily: "Roboto",
     color: "#ddd",
     marginBottom: 20,
     textAlign: "center",
@@ -137,15 +138,20 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     marginBottom: 15,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: "#522e99",
     color: "white",
   },
   button: {
-    backgroundColor: "#E94057",
+    backgroundColor: "#bc96ff",
     width: "100%",
     padding: 8,
     marginBottom: 15,
-    borderRadius: 8,
+    borderRadius: 8
+  },
+  buttonText: {
+    fontSize: 18, // Adjust size as needed
+    fontWeight: "bold",
+    color: "#371f7d", // Change text color if needed
   },
   toggleText: {
     fontSize: 16,
@@ -153,7 +159,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   toggleHighlight: {
-    color: "#E94057",
+    color: "#d7ff81",
     fontWeight: "bold",
   },
 });

@@ -13,7 +13,7 @@ function LayoutContent() {
     if (isLoggedIn === false) {
       router.replace("/login"); // Redirect to login if not authenticated
     } else if (isLoggedIn === true) {
-      router.replace("/index"); // Redirect to home if authenticated
+      router.replace("/imageAskingScreen"); // Redirect to home if authenticated
     }
   }, [isLoggedIn]);
 
@@ -43,6 +43,7 @@ function LayoutContent() {
             <Stack.Screen name="settings" options={{ title: "Settings" }} />
             <Stack.Screen name="partnersProfile" options={{ title: "Partner Profile" }} />
             <Stack.Screen name="RecievedBlindMessageList" />
+            <Stack.Screen name="imageAskingScreen" />
           </>
         ) : (
           <>

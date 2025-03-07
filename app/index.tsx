@@ -15,6 +15,7 @@ export default function HomeScreen() {
   const scaleAnim = new Animated.Value(0.8);
   const [hearts] = useState(new Array(10).fill(0).map(() => new Animated.Value(0))); // Floating hearts
   const { user } = useAuth();
+  
 
   
 

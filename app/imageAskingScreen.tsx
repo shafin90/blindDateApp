@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import { 
-    View, Text, Image, TouchableOpacity, 
-    StyleSheet, Alert, ActivityIndicator, Animated 
+import {
+    View, Text, Image, TouchableOpacity,
+    StyleSheet, Alert, ActivityIndicator, Animated
 } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
-import { auth } from "../config/firebase"; 
+import { auth } from "../config/firebase";
 import InterestSelectionScreen from "./interestAskingScreen";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { useAuth } from "@/context/authContext";
+import { getUserById } from "@/utils/getSingleUser";
 
 const db = getFirestore();
 
@@ -21,6 +24,7 @@ export default function ImageAskingScreen() {
 
     // Animation for image movement
     const position = useRef(new Animated.Value(1000)).current; // Start from below screen
+
 
     useEffect(() => {
         Animated.timing(position, {
@@ -69,8 +73,6 @@ export default function ImageAskingScreen() {
             setImageUri(imageUrl);
             await saveProfileImage(imageUrl);
 
-            Alert.alert("✅ Upload Successful", "Your profile picture has been updated.");
-            
             // Move to next step
             setStep(2);
         } catch (error) {
@@ -85,7 +87,14 @@ export default function ImageAskingScreen() {
         if (!auth.currentUser) return;
 
         try {
-            await setDoc(doc(db, "users", auth.currentUser.uid), { profilePic: imageUrl }, { merge: true });
+            await setDoc(doc(db, "users", auth.currentUser.uid), { email: auth?.currentUser?.email, profilePic: imageUrl }, { merge: true });
+
+            const getUser = await getUserById(auth.currentUser.uid, "users")
+            console.log("This is user from imagesking====>",getUser, auth.currentUser.uid)
+            if (getUser?.interests?.length>0) {
+                setStep(3)
+                router.push("/mainHome")
+            }
         } catch (error) {
             console.error("Error saving image URL:", error);
         }
@@ -95,17 +104,18 @@ export default function ImageAskingScreen() {
         <View style={styles.container}>
             {/* Progress Indicator (Top Bar) */}
             <View style={styles.progressBarContainer}>
-                <ProgressBar 
-                    progress={step === 1 ? 0.5 : 1} 
-                    color="#bc96ff" 
-                    style={styles.progressBar} 
+                <ProgressBar
+                    progress={step === 1 ? 0.5 : 1}
+                    color="#bc96ff"
+                    style={styles.progressBar}
                 />
             </View>
 
             {/* Title Based on Step */}
-            <Text style={styles.title}>{step === 1 ? "Upload Your Photo" : ""}</Text>
+            <Text style={styles.title}>{step === 1 ? (<AntDesign name="camera" size={30} color="#bc96ff" />) : ""}</Text>
 
             {/* Animated Image Picker (Moving from bottom to center) */}
+            
             {step === 1 ? (
                 <Animated.View style={{ transform: [{ translateY: position }] }}>
                     <TouchableOpacity onPress={pickImage} style={styles.imageContainer} disabled={loading}>
@@ -117,7 +127,7 @@ export default function ImageAskingScreen() {
                     </TouchableOpacity>
                 </Animated.View>
             ) : (
-                <InterestSelectionScreen/>
+                <InterestSelectionScreen />
             )}
 
             {/* Uploading Indicator */}
@@ -149,7 +159,7 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: "bold",
         color: "#d7ff81",
-        marginBottom: 20,
+        marginBottom: 6,
         textAlign: "center",
     },
     imageContainer: {

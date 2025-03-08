@@ -8,14 +8,15 @@ function LayoutContent() {
   const { isLoggedIn } = useAuth(); // Get auth state
   const router = useRouter();
 
-  // 🔄 Redirect User Based on Auth State
-  useEffect(() => {
-    if (isLoggedIn === false) {
-      router.replace("/login"); // Redirect to login if not authenticated
-    } else if (isLoggedIn === true) {
-      router.replace("/imageAskingScreen"); // Redirect to home if authenticated
-    }
-  }, [isLoggedIn]);
+  // // 🔄 Redirect User Based on Auth State
+  // useEffect(() => {
+  //   if (isLoggedIn === false) {
+  //     router.replace("/login");
+  //   } else if (isLoggedIn === true) {
+  //     router.push("/imageAskingScreen"); // 👈 Use push() instead of replace()
+  //   }
+  // }, [isLoggedIn]);
+
 
   // ⏳ Show a loading indicator while checking auth state
   if (isLoggedIn === null) {
@@ -30,7 +31,11 @@ function LayoutContent() {
 
   return (
     <PaperProvider>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{
+        headerShown: false,
+        animation: "slide_from_right", // 👈 Default slide-in transition
+        gestureEnabled: true, // 👈 Allow swipe-back gestures
+      }}>
         {isLoggedIn ? (
           <>
             <Stack.Screen name="index" options={{ title: "Home" }} />
@@ -43,11 +48,21 @@ function LayoutContent() {
             <Stack.Screen name="settings" options={{ title: "Settings" }} />
             <Stack.Screen name="partnersProfile" options={{ title: "Partner Profile" }} />
             <Stack.Screen name="RecievedBlindMessageList" />
-            <Stack.Screen name="imageAskingScreen" />
+            
+            <Stack.Screen name="mainHome" />
+            <Stack.Screen name="myProfile" />
+            <Stack.Screen name="imageAskingScreen" options={{
+              animation: "slide_from_left", // ImageAskingScreen slides in from right
+              gestureEnabled: false,
+            }} />
           </>
         ) : (
           <>
-            <Stack.Screen name="login" options={{ title: "Login" }} />
+            <Stack.Screen name="login" options={{
+              title: "Login",
+              animation: "slide_from_right", //Login slides out to the left
+              gestureEnabled: false
+            }} />
             <Stack.Screen name="register" options={{ title: "Register" }} />
           </>
         )}

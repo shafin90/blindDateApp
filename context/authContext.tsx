@@ -20,7 +20,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const [userId, setUserId] = useState<string | null>(null);
     const [blindMessageReciever, setBlindMessageReciever] = useState<string | null>(null);

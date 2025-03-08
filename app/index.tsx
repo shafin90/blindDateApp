@@ -110,7 +110,7 @@ export default function HomeScreen() {
           <Text style={styles.buttonText}>Find Matches</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push("/RecievedBlindMessageList")} style={[styles.button, styles.primaryButton]}>
+        <TouchableOpacity onPress={() => router.push("/mainHome")} style={[styles.button, styles.primaryButton]}>
           <MaterialCommunityIcons name="cellphone-message" size={24} color="white" />
           <Text style={styles.buttonText}>Anonymous Messages</Text>
         </TouchableOpacity>

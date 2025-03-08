@@ -41,55 +41,8 @@ export default function MatchesScreen() {
       };
     }, [])
   );
-  // to trigger back to the home screen smoothly
 
-
-  // ✅ Fetch Matches
-  // const fetchMatches = async () => {
-  //   const user = auth.currentUser;
-  //   if (!user) return;
-
-  //   try {
-  //     setLoading(true);
-  //     const usersRef = collection(db, "users");
-
-  //     // 🔹 Get logged-in user's interests
-  //     const userSnap = await getDocs(query(usersRef, where("email", "==", user.email)));
-  //     if (userSnap.empty) {
-  //       Alert.alert("Error", "User not found in database.");
-  //       return;
-  //     }
-
-  //     const userData = userSnap.docs[0].data();
-  //     const userId = userSnap.docs[0].id;
-  //     const interests = userData.interests || [];
-
-  //     if (interests.length === 0) {
-  //       Alert.alert("Select Interests", "Please select at least one interest to find matches.");
-  //       return;
-  //     }
-
-  //     // 🔹 Find users with shared interests
-  //     const q = query(usersRef, where("interests", "array-contains-any", interests));
-  //     const querySnapshot = await getDocs(q);
-
-  //     let matchedUsers = [];
-  //     querySnapshot.forEach((doc) => {
-  //       if (doc.id !== userId) {
-  //         matchedUsers.push({ id: doc.id, ...doc.data() });
-  //       }
-  //     });
-
-  //     setMatches(matchedUsers);
-  //   } catch (error) {
-  //     console.error("Error fetching matches:", error);
-  //     Alert.alert("Error", "Could not fetch matches.");
-  //   } finally {
-  //     setLoading(false);
-  //     setRefreshing(false);
-  //   }
-  // };
-
+  
   const fetchMatches = async () => {
     const user = auth.currentUser;
     if (!user) return;

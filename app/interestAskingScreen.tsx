@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { 
-    View, Text, TouchableOpacity, StyleSheet, Animated, FlatList 
+import {
+    View, Text, TouchableOpacity, StyleSheet, Animated, FlatList
 } from "react-native";
 import { useRouter } from "expo-router";
 import { ProgressBar } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/config/firebase";
 
 // Proper Interest categories with correct icons
 const INTEREST_CATEGORIES = {
@@ -56,6 +58,9 @@ export default function InterestSelectionScreen() {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const router = useRouter();
 
+
+    console.log(selectedInterests)
+
     // Fade-in animation when changing category
     useEffect(() => {
         fadeAnim.setValue(0);
@@ -67,23 +72,38 @@ export default function InterestSelectionScreen() {
     }, [activeCategory]);
 
     // Toggle interest selection
-    const handleSelectInterest = (interest: string) => {
-        setSelectedInterests(prev =>
-            prev.includes(interest) ? prev.filter(i => i !== interest) : [...prev, interest]
-        );
+    const handleSelectInterest = (interest) => {
+        setSelectedInterests(prev => {
+            const exists = prev.some(i => i.name === interest.name);
+            const updatedInterests = exists
+                ? prev.filter(i => i.name !== interest.name)
+                : [...prev, interest];
+
+            // Update Firestore AFTER updating state
+            updateUserInterests(updatedInterests);
+            return updatedInterests;
+        });
     };
+
+    const updateUserInterests = async (updatedInterests) => {
+        if (!auth?.currentUser?.uid) return;
+        try {
+            await setDoc(doc(db, "users", auth.currentUser.uid), { interests: updatedInterests }, { merge: true });
+        } catch (error) {
+            console.error("Error updating interests:", error);
+        }
+    };
+
+
 
     return (
         <View style={styles.container}>
-            
-            {/* Title */}
-            <Text style={styles.subtitle}>Tap to choose what you love</Text>
 
             {/* Category Tabs */}
             <View style={styles.categoryContainer}>
                 {Object.keys(INTEREST_CATEGORIES).map(category => (
-                    <TouchableOpacity 
-                        key={category} 
+                    <TouchableOpacity
+                        key={category}
                         onPress={() => setActiveCategory(category as keyof typeof INTEREST_CATEGORIES)}
                         style={[styles.categoryButton, activeCategory === category && styles.activeCategory]}
                     >
@@ -100,29 +120,35 @@ export default function InterestSelectionScreen() {
                     numColumns={2}
                     contentContainerStyle={styles.gridContainer}
                     renderItem={({ item }) => (
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             style={[
-                                styles.interestBox, 
-                                selectedInterests.includes(item.name) && styles.selectedBox
+                                styles.interestBox,
+                                selectedInterests.some(i => i.name === item.name) && styles.selectedBox
                             ]}
-                            onPress={() => handleSelectInterest(item.name)}
+                            onPress={() => handleSelectInterest(item)}
                         >
-                            <MaterialIcons 
-                                name={item.icon} 
-                                size={40} 
-                                color={selectedInterests.includes(item.name) ? "#fff" : "#bc96ff"} 
+                            <MaterialIcons
+                                name={item.icon}
+                                size={40}
+                                color={selectedInterests.some(i => i.name === item.name) ? "white" : "#bc96ff"}
                             />
-                            <Text style={styles.interestText}>{item.name}</Text>
+                            <Text style={{
+                                ...styles.interestText,
+                                color: selectedInterests.some(i => i.name === item.name) ? "white" : "#bc96ff"
+                            }}>
+                                {item.name}
+                            </Text>
                         </TouchableOpacity>
+
                     )}
                 />
             </Animated.View>
 
             {/* Continue Button */}
-            <TouchableOpacity 
-                style={[styles.continueButton, selectedInterests.length > 0 ? styles.activeButton : styles.disabledButton]} 
+            <TouchableOpacity
+                style={[styles.continueButton, selectedInterests.length > 0 ? styles.activeButton : styles.disabledButton]}
                 disabled={selectedInterests.length === 0}
-                onPress={() => router.replace("/home")}
+                onPress={() => router.replace("/mainHome")}
             >
                 <Text style={styles.buttonText}>Continue</Text>
             </TouchableOpacity>
@@ -138,7 +164,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         padding: 20,
         paddingBottom: 85,
-        marginTop: 100,
+        marginTop: 70,
     },
     progressBarContainer: {
         position: "absolute",
@@ -162,8 +188,9 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         flexWrap: "wrap",
         marginBottom: 15,
-        width:"120%",
-        right:16
+        width: "120%",
+        right: 16,
+        backgroundColor: "#371f7d"
     },
     categoryButton: {
         paddingVertical: 8,
@@ -197,12 +224,11 @@ const styles = StyleSheet.create({
         margin: 10,
     },
     selectedBox: {
-        backgroundColor: "#bc96ff",
-        borderColor: "#d7ff81",
+        backgroundColor: "#567E4A",
+        borderWidth: 0
     },
     interestText: {
         fontSize: 16,
-        color: "#fff",
         marginTop: 5,
     },
     continueButton: {

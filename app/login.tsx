@@ -6,6 +6,10 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthState
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { addUser } from "../utils/addUser"
+import { useAuth } from "@/context/authContext";
+import { getUsers } from "../utils/getUser"
+
+
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -13,30 +17,38 @@ const LoginScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [secureText, setSecureText] = useState<boolean>(true);
   const [isLoginMode, setIsLoginMode] = useState<boolean>(true); // Toggle between Login & Sign Up
+  const { setUser } = useAuth()
+
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
-      if (user) {
-        router.replace("/");
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const handleAuth = async (): Promise<void> => {
     setLoading(true);
     try {
       if (isLoginMode) {
         await signInWithEmailAndPassword(auth, email, password);
-        
       } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-        await addUser({ email: email })
-        
+        const registeringUser = await createUserWithEmailAndPassword(auth, email, password);
+        setUser(registeringUser)
       }
-      // router.replace("/");
+      const getUser = await getUsers(auth?.currentUser?.uid, "users");
+      const isAlreadyProfileImageExist = getUser?.profilePic;
+      const isAlreadyInterestExist = getUser?.interests;
+
+      if (isAlreadyProfileImageExist && isAlreadyInterestExist) {
+        router.push("/")
+      }
+      else if (isAlreadyProfileImageExist && !isAlreadyInterestExist) {
+        router.push("/interestAskingScreen")
+      }
+      else if (!isAlreadyProfileImageExist && isAlreadyInterestExist) {
+        router.push("/imageAskingScreen")
+      }
+      else{
+       router.push("/imageAskingScreen") 
+      }
+
+
     } catch (error: any) {
       Alert.alert("❌ Error", error.message);
     } finally {
@@ -125,7 +137,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 40,
     fontWeight: "bold",
-    color: "#d7ff81",
+    color: "#bc96ff",
     marginBottom: 5,
   },
   subtitle: {
@@ -159,7 +171,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   toggleHighlight: {
-    color: "#d7ff81",
+    color: "#bc96ff",
     fontWeight: "bold",
   },
 });
